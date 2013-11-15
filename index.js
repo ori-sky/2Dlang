@@ -18,7 +18,7 @@ var util = require('util')
 var fs = require('fs')
 var parser = require('./parser')
 
-var gridify = function(tokens)
+var build_grid = function(tokens)
 {
     var grid = []
     grid.push([])
@@ -42,26 +42,36 @@ var gridify = function(tokens)
     return grid
 }
 
-var evaluate = function(grid)
+var build_function_table = function(grid)
 {
-    var row, col
+    var table = {}
 
-    find_main:
-    for(row=0; row<grid.length; ++row)
+    for(var row=0; row<grid.length; ++row)
     {
-        for(col=0; col<grid[row].length; ++col)
+        for(var col=0; col<grid[row].length; ++col)
         {
             if(grid[row][col].type === 'Function'
-            && grid[row][col].id.literal === 'main')
+            && table[grid[row][col].id.literal] === undefined)
             {
-                break find_main
+                table[grid[row][col].id.literal] = {row:row, col:col}
             }
         }
     }
 
-    console.log('#main is at ' + row + ':' + col)
+    return table
+}
 
-    // TODO: find all Function locations and store them in a table
+var run = function(grid)
+{
+    var table = build_function_table(grid)
+
+    if(table.main === undefined) throw new Error('missing function: #main')
+
+    console.log('function table:')
+    for(var k in table)
+    {
+        console.log(table[k].row + ':' + table[k].col + ' #' + k)
+    }
 }
 
 var filename = process.argv[2]
@@ -71,8 +81,8 @@ fs.readFile(filename, function(err, data)
     try
     {
         var tokens = parser.parse(data.toString())
-        var grid = gridify(tokens)
-        evaluate(grid)
+        var grid = build_grid(tokens)
+        run(grid)
         return
 
         var s = ''
