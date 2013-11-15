@@ -60,6 +60,8 @@ var evaluate = function(grid)
     }
 
     console.log('#main is at ' + row + ':' + col)
+
+    // TODO: find all Function locations and store them in a table
 }
 
 var filename = process.argv[2]
