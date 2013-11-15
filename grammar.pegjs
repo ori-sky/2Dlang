@@ -15,31 +15,31 @@
  */
 
 {
-    Symbol = function(type, size)
+    Symbol = function(type, length)
     {
         this.type = type
-        this.size = size
+        this.length = length
     }
 
     SymbolFunction = function(id)
     {
         this.type = 'Function'
         this.id = id
-        this.size = id.size + 1
+        this.length = id.length + 1
     }
 
     SymbolIdentifier = function(literal)
     {
         this.type = 'Identifier'
         this.literal = literal
-        this.size = literal.length
+        this.length = literal.length
     }
 
     SymbolNumber = function(literal)
     {
         this.type = 'Number'
         this.literal = parseInt(literal)
-        this.size = literal.length
+        this.length = literal.length
     }
 }
 
@@ -53,8 +53,8 @@ Symbol
     / Operator
     / Direction
     / Junction
-    / Space
     / NewLine
+    / Space
 
 Function
     = "#" id:Identifier { return new SymbolFunction(id) }
@@ -83,6 +83,7 @@ Junction
 
 Space
     = " " { return new Symbol('Space', 1) }
+    / c:. { return new Symbol(c, 1) }
 
 NewLine
     = ("\n" / "\r" / "\r\n") { return new Symbol('Line', 1) }
