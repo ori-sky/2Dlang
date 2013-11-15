@@ -18,16 +18,64 @@ var util = require('util')
 var fs = require('fs')
 var parser = require('./parser')
 
+var gridify = function(tokens)
+{
+    var grid = []
+    grid.push([])
+
+    tokens.forEach(function(v)
+    {
+        switch(v.type)
+        {
+            case 'Line':
+                grid.push([])
+                break
+            default:
+                for(var i=0; i<v.length; ++i)
+                {
+                    grid[grid.length - 1].push(v)
+                }
+                break
+        }
+    })
+
+    return grid
+}
+
+var evaluate = function(grid)
+{
+    var row, col
+
+    find_main:
+    for(var r=0; r<grid.length; ++r)
+    {
+        for(var c=0; c<grid[r].length; ++c)
+        {
+            if(grid[r][c].type === 'Function' && grid[r][c].id.literal === 'main')
+            {
+                row = r
+                col = c
+                break find_main
+            }
+        }
+    }
+
+    console.log('#main is at ' + row + ':' + col)
+}
+
 var filename = process.argv[2]
 fs.readFile(filename, function(err, data)
 {
     if(err) throw err
     try
     {
-        var parsed = parser.parse(data.toString())
-        var s = ''
+        var tokens = parser.parse(data.toString())
+        var grid = gridify(tokens)
+        evaluate(grid)
+        return
 
-        parsed.forEach(function(v)
+        var s = ''
+        tokens.forEach(function(v)
         {
             switch(v.type)
             {
@@ -64,7 +112,8 @@ fs.readFile(filename, function(err, data)
                     s += v.literal
                     break
                 default:
-                    throw new Error('unrecognized type: `' + v.type + '`')
+                    s += v.type
+                    break
             }
         })
 
