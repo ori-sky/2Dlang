@@ -47,14 +47,13 @@ var evaluate = function(grid)
     var row, col
 
     find_main:
-    for(var r=0; r<grid.length; ++r)
+    for(row=0; row<grid.length; ++row)
     {
-        for(var c=0; c<grid[r].length; ++c)
+        for(col=0; col<grid[row].length; ++col)
         {
-            if(grid[r][c].type === 'Function' && grid[r][c].id.literal === 'main')
+            if(grid[row][col].type === 'Function'
+            && grid[row][col].id.literal === 'main')
             {
-                row = r
-                col = c
                 break find_main
             }
         }
