@@ -1,0 +1,19 @@
+#main
+   v  result should
+  2+3  be 25 here
+   v
+  5*>  out
+   v
+
+3>sum<1
+   v
+  out
+
+ result should
+  be 29 here
+
+
+      #sum <.
+      v  v  ^
+
+      .> +> .
