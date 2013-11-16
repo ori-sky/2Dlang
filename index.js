@@ -71,7 +71,10 @@ exports.run = function(grid)
         console.log(table[k].row + ':' + table[k].col + ' #' + k)
     }
 
+    console.log('calling #main')
     exports.call(grid, table, 'main', [])
+    console.log('calling #sum')
+    exports.call(grid, table, 'sum', [])
 }
 
 exports.call = function(grid, table, name, params)
@@ -84,25 +87,38 @@ exports.call = function(grid, table, name, params)
     // down
     for(var offset=0; offset<fn.length; ++offset)
     {
-        exports.path(grid, table, entry.row + 1, entry.col + offset)
+        exports.path(grid, table, entry.row + 1, entry.col + offset, 'Down')
     }
 
     // right
-    exports.path(grid, table, entry.row, entry.col + fn.length)
+    exports.path(grid, table, entry.row, entry.col + fn.length, 'Right')
 
     // up
     for(var offset=fn.length-1; offset>=0; --offset)
     {
-        exports.path(grid, table, entry.row - 1, entry.col + offset)
+        exports.path(grid, table, entry.row - 1, entry.col + offset, 'Up')
     }
 
     // left
-    exports.path(grid, table, entry.row, entry.col - 1)
+    exports.path(grid, table, entry.row, entry.col - 1, 'Left')
 }
 
-exports.path = function(grid, table, row, col)
+exports.path = function(grid, table, row, col, dir)
 {
-    console.log('path: ' + row + ':' + col)
+    if(row < 0 || col < 0 || row >= grid.length || col >= grid[row].length)
+    {
+        // out of bounds
+        return
+    }
+
+    var cell = grid[row][col]
+
+    switch(cell.type)
+    {
+        case dir:
+            console.log('path ' + row + ':' + col + ' (' + cell.type + ')')
+            break
+    }
 }
 
 var filename = process.argv[2]
