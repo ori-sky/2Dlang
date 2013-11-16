@@ -18,7 +18,7 @@ var util = require('util')
 var fs = require('fs')
 var parser = require('./parser')
 
-var build_grid = function(tokens)
+exports.build_grid = function(tokens)
 {
     var grid = []
     grid.push([])
@@ -42,7 +42,7 @@ var build_grid = function(tokens)
     return grid
 }
 
-var build_function_table = function(grid)
+exports.build_function_table = function(grid)
 {
     var table = {}
 
@@ -61,17 +61,48 @@ var build_function_table = function(grid)
     return table
 }
 
-var run = function(grid)
+exports.run = function(grid)
 {
-    var table = build_function_table(grid)
-
-    if(table.main === undefined) throw new Error('missing function: #main')
+    var table = exports.build_function_table(grid)
 
     console.log('function table:')
     for(var k in table)
     {
         console.log(table[k].row + ':' + table[k].col + ' #' + k)
     }
+
+    exports.call(grid, table, 'main', [])
+}
+
+exports.call = function(grid, table, name, params)
+{
+    if(table[name] === undefined) throw new Error('missing function: #' + name)
+
+    var entry = table[name]
+    var fn = grid[entry.row][entry.col]
+
+    // down
+    for(var offset=0; offset<fn.length; ++offset)
+    {
+        exports.path(grid, table, entry.row + 1, entry.col + offset)
+    }
+
+    // right
+    exports.path(grid, table, entry.row, entry.col + fn.length)
+
+    // up
+    for(var offset=fn.length-1; offset>=0; --offset)
+    {
+        exports.path(grid, table, entry.row - 1, entry.col + offset)
+    }
+
+    // left
+    exports.path(grid, table, entry.row, entry.col - 1)
+}
+
+exports.path = function(grid, table, row, col)
+{
+    console.log('path: ' + row + ':' + col)
 }
 
 var filename = process.argv[2]
@@ -81,8 +112,8 @@ fs.readFile(filename, function(err, data)
     try
     {
         var tokens = parser.parse(data.toString())
-        var grid = build_grid(tokens)
-        run(grid)
+        var grid = exports.build_grid(tokens)
+        exports.run(grid)
         return
 
         var s = ''
