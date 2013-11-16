@@ -60,7 +60,7 @@ Function
     = "#" id:Identifier { return new SymbolFunction(id) }
 
 Identifier
-    = first:[A-Za-z_] rest:[A-Za-z_0-9]* { return new SymbolIdentifier(first + rest.join('')) }
+    = first:[A-Za-z_] rest:[A-Za-z_0-9]+ { return new SymbolIdentifier(first + rest.join('')) }
 
 Number
     = digits:[0-9]+ { return new SymbolNumber(digits.join('')) }
